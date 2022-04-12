@@ -1,3 +1,4 @@
+
 # username - andalrhmana
 # id1      - 322923087
 # name1    - andalrhmana
@@ -85,7 +86,7 @@ class AVLNode(object):
         """
 
     def getSize(self):
-        if not self:
+        if self == None:
             return 0
         return self.size
 
@@ -107,7 +108,8 @@ class AVLNode(object):
     """
 
     def setLeft(self, node):
-        self.left = node
+        if self != None:
+            self.left = node
 
     """sets right child
 
@@ -116,7 +118,8 @@ class AVLNode(object):
     """
 
     def setRight(self, node):
-        self.right = node
+        if self != None:
+            self.right = node
 
     """sets parent
 
@@ -231,7 +234,7 @@ class AVLTreeList(object):
     """
 
     def retrieve(self, i):
-        return AVLNode.getValue(Tree_select(self, i))
+        return AVLNode.getValue(AVLTreeList.Tree_select(self, i+1))
 
     """retrieves the node of the 1'th item in the list of the node@self.root = node 
 
@@ -240,9 +243,7 @@ class AVLTreeList(object):
 
     def MinAvl(node):
         if AVLNode.isRealNode(node):
-            while AVLNode.isRealNode(AVLNode.getLeft(node)):
-                node = AVLNode.getLeft(node)
-        return node
+            return AVLTreeList.Tree_select_rec(node, 1)
 
     """return the successor of the node in the list 
 
@@ -265,9 +266,7 @@ class AVLTreeList(object):
 
     def MaxAvl(node):
         if AVLNode.isRealNode(node):
-            while AVLNode.isRealNode(AVLNode.getRight(node)):
-                node = AVLNode.getRight(node)
-        return node
+            return AVLTreeList.Tree_select_rec(node, AVLNode.getSize(node))
 
     """return the predecessor of the node in the list 
 
@@ -298,9 +297,13 @@ class AVLTreeList(object):
     """
 
     def setheightRotation(node):
+        counter = 0
         while AVLNode.isRealNode(AVLNode.getParent(node)):
             AVLNode.setHeight(node, max(AVLNode.getHeight(AVLNode.getLeft(node)), AVLNode.getHeight(AVLNode.getRight(node))) + 1)
+            if AVLNode.getHeight(node) != AVLNode.getPrevHeight(node):
+                counter += 1
             node = AVLNode.getParent(node)
+        return counter
 
     """
     balance the tree - left left rotaion
@@ -439,8 +442,10 @@ class AVLTreeList(object):
             if -1 <= BFdad <= 1:
                 if AVLNode.getHeight(dad) == AVLNode.getPrevHeight(dad):
                     break
+                count += 1
                 dad = AVLNode.getParent(dad)
             else:
+                count += 1
                 if BFdad == 2:
                     BFleftson = AVLNode.getHeight(AVLNode.getLeft(AVLNode.getLeft (dad))) - AVLNode.getHeight(AVLNode.getRight(AVLNode.getLeft(dad)))
                     if BFleftson == 1:
@@ -460,7 +465,7 @@ class AVLTreeList(object):
                 if dad == self.root:
                     self.root = AVLNode.getParent(dad)
                 dad = AVLNode.getParent(dad)
-                AVLTreeList.setheightRotation(dad)
+                count += AVLTreeList.setheightRotation(dad)
                 break
 
         return count
@@ -475,79 +480,94 @@ class AVLTreeList(object):
     """
 
     def delete(self, i):
-        pop = Tree_select(self, i)
-        if getLeft(pop) == None and getRight(pop) == None:
-            if getParent(pop) == None:
+        pop = AVLTreeList.Tree_select(self, i + 1)
+        if AVLNode.getLeft(pop) == None and AVLNode.getRight(pop) == None:
+            if AVLNode.getParent(pop) == None:
                 self.root == None
-            elif getRight(getParent(pop)) == pop:
-                setRight(getParent(pop), None)
+                return 0
+            elif AVLNode.getRight(AVLNode.getParent(pop)) == pop:
+                dad = AVLNode.getParent(pop)
+                AVLNode.setRight(AVLNode.getParent(pop), None)
+
             else:
-                setLeft(getParent(pop), None)
-        elif getLeft(pop) == None:
-            dad = getParent(pop)
+                dad = AVLNode.getParent(pop)
+                AVLNode.setLeft(AVLNode.getParent(pop), None)
+        elif AVLNode.getLeft(pop) == None:
+            dad = AVLNode.getParent(pop)
             if dad == None:
-                self.root = getRight(pop)
-                getParent(self.root, None)
-            elif getRight(dad) == pop:
-                setRight(dad, getRight(pop))
-                setParent(getRight(dad), dad)
+                self.root = AVLNode.getRight(pop)
+                AVLNode.getParent(self.root, None)
+            elif AVLNode.getRight(dad) == pop:
+                AVLNode.setRight(dad, AVLNode.getRight(pop))
+                AVLNode.setParent(AVLNode.getRight(dad), dad)
             else:
-                setLeft(dad, getRight(pop))
-                setParent(getLeft(dad), dad)
-        elif getRight(pop) == None:
-            dad = getParent(pop)
+                AVLNode.setLeft(dad, AVLNode.getRight(pop))
+                AVLNode.setParent(AVLNode.getLeft(dad), dad)
+        elif AVLNode.getRight(pop) == None:
+            dad = AVLNode.getParent(pop)
             if dad == None:
-                self.root = getLeft(pop)
-                getParent(self.root, None)
-            elif getRight(dad) == pop:
-                setRight(dad, getLeft(pop))
-                setParent(getRight(dad), dad)
+                self.root = AVLNode.getLeft(pop)
+                AVLNode.getParent(self.root, None)
+            elif AVLNode.getRight(dad) == pop:
+                AVLNode.setRight(dad, AVLNode.getLeft(pop))
+                AVLNode.setParent(AVLNode.getRight(dad), dad)
             else:
-                setLeft(dad, getLeft(pop))
-                setParent(getLeft(dad), dad)
+                AVLNode.setLeft(dad, AVLNode.getLeft(pop))
+                AVLNode.setParent(AVLNode.getLeft(dad), dad)
         else:
-            y = successor(pop)
-            dad = getParent(y)
-            ansecctor = getParent(pop)
-            setLeft(ansecctor, getRight(pop))
-            setParent(getLeft(ansecctor), ansecctor)
-            setLeft(y, getLeft(pop))
-            setRight(y, getRight(pop))
-            setParent(getLeft(y), y)
-            setParent(getRight(y), y)
-            setParent(y, ansecctor)
-            if dad != None:
-                if getRight(ansecctor) == pop:
-                    setRight(ansecctor, y)
+            y = AVLTreeList.successor(pop)
+            dad = AVLNode.getParent(y)
+            if dad != pop:
+                AVLNode.setLeft(dad, AVLNode.getRight(y))
+                AVLNode.setParent(AVLNode.getRight(y), dad)
+                AVLNode.setRight(y, AVLNode.getRight(pop))
+                AVLNode.setParent(AVLNode.getRight(y), y)
+            AVLNode.setLeft(y, AVLNode.getLeft(pop))
+            AVLNode.setParent(AVLNode.getLeft(pop), y)
+
+
+            if pop == self.root:
+                self.root = y
+                AVLNode.setParent(y, None)
+            else:
+                anccestor = AVLNode.getParent(pop)
+                if AVLNode.getRight(anccestor) == pop:
+                    AVLNode.setRight(anccestor, y)
                 else:
-                    setLeft(ansecctor, y)
-        setSizeandHeight(seccessordad)
+                    AVLNode.setLeft(anccestor, y)
+                AVLNode.setParent(y, anccestor)
+            if dad == pop:
+                dad = y
+        AVLTreeList.setSizeandHeight(dad)
         count = 0
         while dad != None:
-            BFdad = getHeight(getLeft(dad)) - getHeight(getRight(dad))
+            BFdad = AVLNode.getHeight(AVLNode.getLeft(dad)) - AVLNode.getHeight(AVLNode.getRight(dad))
             if -1 <= BFdad <= 1:
-                if getHeight(dad) == getPrevHeight(dad):
+                if AVLNode.getHeight(dad) == AVLNode.getPrevHeight(dad):
                     break
-                dad = getParent(dad)
+                count += 1
+                dad = AVLNode.getParent(dad)
             else:
                 if BFdad == 2:
-                    BFleftson = getHeight(getLeft(getLeft(dad))) - getHeight(getLeft(getRight(dad)))
+                    BFleftson = AVLNode.getHeight(AVLNode.getLeft(AVLNode.getLeft(dad))) - AVLNode.getHeight(AVLNode.getRight(AVLNode.getLeft(dad)))
                     if BFleftson == 1 or BFleftson == 0:
-                        RotationLL(dad)
+                        AVLTreeList.RotationLL(dad)
                         count += 1
                     else:
-                        RotationLR(dad)
+                        AVLTreeList.RotationLR(dad)
                         count += 2
                 else:
-                    BFrightson = getHeight(getRight(getLeft(dad))) - getHeight(getRight(getRight(dad)))
+                    BFrightson = AVLNode.getHeight(AVLNode.getLeft(AVLNode.getRight(dad))) - AVLNode.getHeight(AVLNode.getRight(AVLNode.getRight(dad)))
                     if BFrightson == 1:
-                        RotationRL(dad)
+                        AVLTreeList.RotationRL(dad)
                         count += 2
                     else:
-                        RotationRR(dad)
+                        AVLTreeList.RotationRR(dad)
                         count += 1
-                dad = getParent(dad)
-        setheightRotation(dad)
+                if dad == self.root:
+                    self.root = AVLNode.getParent(dad)
+                dad = AVLNode.getParent(AVLNode.getParent(dad))
+        count += AVLTreeList.setheightRotation(dad)
         return count
 
     """returns the value of the first item in the list
@@ -752,17 +772,20 @@ class AVLTreeList(object):
 
 b = AVLTreeList()
 b.getRoot()
-b.insert(0, "a")
-b.insert(1, "b")
-b.insert(0, "c")
-b.insert(3, "d")
-b.insert(0, "e")
-b.insert(4, "p")
-b.insert(0, "k")
-b.insert(0, "l")
-b.insert(4, "h")
-b.insert(3, "o")
-b.insert(3, "w")
-
-print(b.listToArray())
+print(b.insert(0, 15))
+b.insert(0, 8)
+b.insert(2, 22)
+b.insert(0, 4)
+b.insert(2, 11)
+b.insert(4, 20)
+b.insert(6, 24)
+print(b.insert(0, 2))
+print(b.insert(3, 9))
+print(b.insert(5,12))
+print(b.insert(7, 18))
+print(b.insert(6, 13))
+print(b.delete(9))
+print(b.delete(9))
+print(b.delete(4))
 AVLTreeList.print2d(b.getRoot())
+print(b.listToArray())
