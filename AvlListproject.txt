@@ -1,4 +1,3 @@
-
 # username - andalrhmana
 # id1      - 322923087
 # name1    - andalrhmana
@@ -422,7 +421,9 @@ class AVLTreeList(object):
         AVLNode.setHeight(newnode, 0)
         AVLNode.setSize(newnode, 1)
         AVLNode.setRight(newnode, AVLNode(None))
+        AVLNode.setParent(AVLNode.getRight(newnode), newnode)
         AVLNode.setLeft(newnode, AVLNode(None))
+        AVLNode.setParent(AVLNode.getLeft(newnode), newnode)
         if i < AVLNode.getSize(self.root):
             current = AVLTreeList.Tree_select(self, i + 1)
             if not AVLNode.isRealNode(AVLNode.getLeft(current)):
@@ -488,14 +489,16 @@ class AVLTreeList(object):
         pop = AVLTreeList.Tree_select(self, i + 1)
         if (not AVLNode.isRealNode(AVLNode.getLeft(pop))) and (not AVLNode.isRealNode(AVLNode.getRight(pop))):
             if AVLNode.getParent(pop) == None:
-                self.root == None
+                self.root = None
                 return 0
             elif AVLNode.getRight(AVLNode.getParent(pop)) == pop:
                 dad = AVLNode.getParent(pop)
                 AVLNode.setRight(AVLNode.getParent(pop), AVLNode(None))
+                AVLNode.setParent(AVLNode.getRight(AVLNode.getParent(pop)), AVLNode.getParent(pop))
             else:
                 dad = AVLNode.getParent(pop)
                 AVLNode.setLeft(AVLNode.getParent(pop), AVLNode(None))
+                AVLNode.setParent(AVLNode.getLeft(AVLNode.getParent(pop)), AVLNode.getParent(pop))
         elif not AVLNode.isRealNode(AVLNode.getLeft(pop)):
             dad = AVLNode.getParent(pop)
             if dad == None:
@@ -511,7 +514,7 @@ class AVLTreeList(object):
             dad = AVLNode.getParent(pop)
             if dad == None:
                 self.root = AVLNode.getLeft(pop)
-                AVLNode.getParent(self.root, None)
+                AVLNode.setParent(self.root, None)
             elif AVLNode.getRight(dad) == pop:
                 AVLNode.setRight(dad, AVLNode.getLeft(pop))
                 AVLNode.setParent(AVLNode.getRight(dad), dad)
@@ -648,24 +651,31 @@ class AVLTreeList(object):
         while dad != None:
             if AVLNode.getRight(dad) == x:
                 AVLNode.setRight(dad, AVLNode(None))
+                AVLNode.setParent(AVLNode.getRight(dad), dad)
                 x = dad
                 dad = AVLNode.getParent(x)
                 AVLNode.setParent(x, None)
                 tree.root = x
-                Lefttree.concat(tree)
+                AVLNode.setSize(x, AVLNode.getSize(AVLNode.getLeft(x)) + 1)
+                AVLNode.setHeight(x, AVLNode.getHeight(AVLNode.getLeft(x)) + 1)
+                tree.concat(lefttree)
             else:
                 AVLNode.setLeft(dad, AVLNode(None))
+                AVLNode.setParent(AVLNode.getLeft(dad), dad)
                 x = dad
                 dad = AVLNode.getParent(x)
                 AVLNode.setParent(x, None)
                 tree.root = AVLNode.getRight(x)
                 AVLNode.setParent(tree.root, None)
-                AVLNode.setRight(x, AVLNode())
+                AVLNode.setRight(x, AVLNode(None))
+                AVLNode.setParent(AVLNode.getRight(x), x)
                 AVLNode.setLeft(x, righttree.root)
                 AVLNode.setParent(righttree.root, x)
                 righttree.root = x
+                AVLNode.setSize(x, AVLNode.getSize(AVLNode.getLeft(x)) + 1)
+                AVLNode.setHeight(x, AVLNode.getHeight(AVLNode.getLeft(x)) + 1)
                 righttree.concat(tree)
-        return [lefttree, val, rightree]
+        return [lefttree, val, righttree]
 
     """concatenates lst to self
 
@@ -685,7 +695,7 @@ class AVLTreeList(object):
         absouluteHeight = AVLNode.getHeight(self.root) - AVLNode.getHeight(lst.root)
         node = AVLTreeList.MaxAvl(self.root)
         AVLTreeList.delete(self, AVLNode.getSize(self.root) - 1)
-        if AVLNode.getHeight(self.root) >= AVLNode.getHeight(lst.root):
+        if AVLNode.getHeight(self.root) > AVLNode.getHeight(lst.root):
             nodeself = self.root
             while AVLNode.getHeight(nodeself) > AVLNode.getHeight(lst.root):
                 nodeself = AVLNode.getRight(nodeself)
@@ -696,7 +706,14 @@ class AVLTreeList(object):
             AVLNode.setRight(node, lst.root)
             AVLNode.setParent(lst.root, node)
             lst.root = self.root
-            AVLTreeList.setSizeandHeight(node)
+        elif AVLNode.getHeight(self.root) == AVLNode.getHeight(lst.root):
+            AVLNode.setLeft(node, self.root)
+            AVLNode.setParent(self.root, node)
+            AVLNode.setRight(node, lst.root)
+            AVLNode.setParent(lst.root, node)
+            AVLNode.setParent(node, None)
+            lst.root = node
+            self.root = node
         else:
             nodelst = lst.root
             while AVLNode.getHeight(nodelst) > AVLNode.getHeight(self.root):
@@ -705,8 +722,8 @@ class AVLTreeList(object):
             AVLNode.setLeft(AVLNode.getParent(node), node)
             AVLNode.setRight(node, nodelst)
             AVLNode.setParent(nodelst, node)
-            AVLNode.setLeft(node, lst.root)
-            AVLNode.setParent(lst.root, node)
+            AVLNode.setLeft(node, self.root)
+            AVLNode.setParent(self.root, node)
             self.root = lst.root
         AVLTreeList.setSizeandHeight(node)
         dad = AVLNode.getParent(node)
@@ -731,6 +748,9 @@ class AVLTreeList(object):
                         AVLTreeList.RotationRL(dad)
                     else:
                         AVLTreeList.RotationRR(dad)
+                if dad == self.root:
+                    self.root = AVLNode.getParent(dad)
+                    lst.root = self.root
                 dad = AVLNode.getParent(AVLNode.getParent(dad))
         AVLTreeList.setheightRotation(dad)
         if absouluteHeight < 0:
@@ -847,7 +867,7 @@ class AVLTreeList(object):
         if not AVLNode.isRealNode(x):
             return True
         # Size of x should be x.left.size + x.right.size + 1
-        if x.getSize() != (x.getLeft().getSize() + x.getRight().getSize() + 1):
+        if x.getSize() != (AVLNode.getSize(x.getLeft()) + AVLNode.getSize(x.getRight()) + 1):
             return False
         # Recursive calls
         return self.isSizeConsistentRec(x.getLeft()) and self.isSizeConsistentRec(x.getRight())
@@ -941,19 +961,31 @@ print(b.insert(7, 18))
 b.check()
 print(b.insert(6, 13))
 b.check()
-print(b.delete(11))
+#print(b.delete(11))
 b.check()
-print(b.delete(9))
+#print(b.delete(9))
 b.check()
-print(b.delete(4))
+#print(b.delete(4))
 b.check()
-print(b.delete(0))
+#print(b.delete(0))
 b.check()
-print(b.delete(3))
+#print(b.delete(3))
 b.check()
-print(b.delete(2))
+#print(b.delete(2))
 b.check()
-print(b.delete(0))
+#print(b.delete(0))
 b.check()
 AVLTreeList.print2d(b.getRoot())
 print(b.listToArray())
+a = AVLTreeList()
+a.insert(0, 71)
+a.insert(0, 70)
+a.insert(0, 69)
+a.insert(0, 68)
+a.insert(0, 67)
+a.insert(0, 66)
+a.insert(0, 65)
+#a.insert(0, 64)
+#a.insert(0, 63)
+#a.insert(0, 62)
+#a.insert(0, 61)
