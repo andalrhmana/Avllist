@@ -210,16 +210,18 @@ class AVLTreeList(object):
     """
     """TIME COMPLEXITY: O(log(n))"""
     def Tree_select(self, i):
-        return AVLTreeList.Tree_select_rec(self.root, i)
+        return AVLTreeList.Tree_select_rec(self.root, i) #O(log(n))
 
+    """TIME COMPLEXITY: O(log(n))"""
     def Tree_select_rec(root, i):
-        z = AVLNode.getSize(AVLNode.getLeft(root)) + 1                       #O(1)
-        if i == z:
-            return root
-        elif i < z:
-            return AVLTreeList.Tree_select_rec(AVLNode.getLeft(root), i)
+        #עץ הרקורסיה מגובה log(n) במקרה הגרוע
+        z = AVLNode.getSize(AVLNode.getLeft(root)) + 1 #O(1)
+        if i == z: #O(1)
+            return root #O(1)
+        elif i < z: #O(1)
+            return AVLTreeList.Tree_select_rec(AVLNode.getLeft(root), i) #קריאה ריקורסיבית לבן השמאלי עם אותו i
         else:
-            return AVLTreeList.Tree_select_rec(AVLNode.getRight(root), i - z)
+            return AVLTreeList.Tree_select_rec(AVLNode.getRight(root), i - z)  #קריאה ריקורסיבית לבן השמאלי עם i-z
 
     """retrieves the value of the i'th item in the list
 
@@ -229,81 +231,82 @@ class AVLTreeList(object):
     @rtype: str
     @returns: the the value of the i'th item in the list
     """
-
+    """TIME COMPLEXITY: O(log(n))"""
     def retrieve(self, i):
-        return AVLNode.getValue(AVLTreeList.Tree_select(self, i+1))
+        return AVLNode.getValue(AVLTreeList.Tree_select(self, i+1)) #O(log(n))
 
     """retrieves the node of the 1'th item in the list of the node@self.root = node 
-
     @returns: the the node of the 1'th item in the list
     """
-
+    """TIME COMPLEXITY: O(log(n))"""
     def MinAvl(node):
-        if node != None:
-            return AVLTreeList.Tree_select_rec(node, 1)
+        if node != None: #O(1)
+            return AVLTreeList.Tree_select_rec(node, 1)  #O(log(n))
 
     """return the successor of the node in the list 
 
     @returns: the successor of the node in the list
     """
-
+    """TIME COMLEXITY: O(log(n))"""
     def successor(node):
         if AVLNode.isRealNode(AVLNode.getRight(node)):
-            return AVLTreeList.MinAvl(AVLNode.getRight(node))
+            return AVLTreeList.MinAvl(AVLNode.getRight(node)) #recurtion to right node (log(n) iterations in worst case)
         y = AVLNode.getParent(node)
-        while y != None and node == AVLNode.getRight(y):
-            node = y
-            y = AVLNode.getParent(node)
-        return y
+        while y != None and node == AVLNode.getRight(y): # נמשיך עד הפעם הראשונה שנגיע לימין של אבא קדמון - log(n) פעמים במקרה הכי גרוע
+            node = y #O(1)
+            y = AVLNode.getParent(node) #O(1)
+        return y #O(1)
 
-    """retrieves the node of the lasr item in the list of the node@self.root = node 
-
+    """retrieves the node of the last item in the list of the node@self.root = node
     @returns: the the node of the last item in the list
     """
-
+    """TIME COMPLEXITY: O(log(n))"""
     def MaxAvl(node):
-        if node != None:
-            return AVLTreeList.Tree_select_rec(node, AVLNode.getSize(node))
+        if node != None: #O(1)
+            return AVLTreeList.Tree_select_rec(node, AVLNode.getSize(node)) #O(log(n))
 
     """return the predecessor of the node in the list 
 
     @returns: the predecessor of the node in the list
     """
-
+    """TIME COMLEXITY: O(log(n))"""
     def predecessor(node):
-        if AVLNode.isRealNode(AVLNode.getLeft(node)):
-            return AVLTreeList.MaxAvl(AVLNode.getLeft(node))
-        y = AVLNode.getParent(node)
-        while y != None and node == AVLNode.getLeft(y):
-            node = y
-            y = AVLNode.getParent(node)
-        return y
+        if AVLNode.isRealNode(AVLNode.getLeft(node)): #O(1)
+            return AVLTreeList.MaxAvl(AVLNode.getLeft(node)) #recurtion to left node (log(n) iterations in worst case)
+        y = AVLNode.getParent(node) #O(1)
+        while y != None and node == AVLNode.getLeft(y): #נמשיך עד הפעם הראשונה שנגיע לימין של אבא קדמון - log(n) פעמים במקרה הכי גרוע
+            node = y #O(1)
+            y = AVLNode.getParent(node) #O(1)
+        return y #O(1)
 
     """
-    Set the height and size from the node to root of in the list
+    Set the size from the node to root of in the list
     """
-
+    """TIME COMLEXITY: O(log(n))"""
     def setSize(node):
-        while node != None:
+        while node != None: #Run all the way from the node to root
             AVLNode.setSize(node, AVLNode.getSize(AVLNode.getRight(node)) +
-                            AVLNode.getSize(AVLNode.getLeft(node)) + 1)
-            node = AVLNode.getParent(node)
+                            AVLNode.getSize(AVLNode.getLeft(node)) + 1) #O(1)
+            node = AVLNode.getParent(node) #O(1)
 
     """
     Set the height from the node to root of in the list
     """
-
+    """TIME COMLEXITY: O(log(n))"""
     def setheight(node):
-        counter = 0
-        while node != None:
-            AVLNode.setHeight(node, max(AVLNode.getHeight(AVLNode.getLeft(node)), AVLNode.getHeight(AVLNode.getRight(node))) + 1)
-            if AVLNode.getHeight(node) != AVLNode.getPrevHeight(node):
-                counter += 1
-            node = AVLNode.getParent(node)
-        return counter
+        while node != None: #Run all the way from the node to root
+            AVLNode.setHeight(node, max(AVLNode.getHeight(AVLNode.getLeft(node)),
+                                        AVLNode.getHeight(AVLNode.getRight(node))) + 1) #O(1)
+            node = AVLNode.getParent(node) #O(1)
 
+
+    """
+    Calculates the balanceFactor of node
+    ret: BalanceFactor of node  
+    """
+    """ TIME COMLEXITY: O(1)"""
     def balanceFactor(node):
-        return AVLNode.getHeight(AVLNode.getLeft(node)) - AVLNode.getHeight(AVLNode.getRight(node))
+        return AVLNode.getHeight(AVLNode.getLeft(node)) - AVLNode.getHeight(AVLNode.getRight(node)) #O(1)
 
     """
     balance the tree - left left rotaion
@@ -405,42 +408,43 @@ class AVLTreeList(object):
         AVLNode.setHeight(B, max(AVLNode.getHeight(AVLNode.getLeft(B)), AVLNode.getHeight(AVLNode.getRight(B))) + 1) #O(1)
 
 
-    """inserts val at position i in the list
+    """inserts val at rank i+1 in the Tree like in Regular Binary Search Tree
     @type i: int
     @pre: 0 <= i <= self.length()
-    @param i: The intended index in the list to which we insert val
+    @param i: The intended index in the tree to which we insert val
     @type val: str
     @param val: the value we inserts
     @rtype: list
-    @returns: parent of the inserted value
+    @returns: parent of the inserted value in the tree
     """
+    """TIME COMLEXITY: O(log(n))"""
     def insert_BST(self, i , val):
-        newnode = AVLNode(val)
-        AVLNode.setHeight(newnode, 0)
-        AVLNode.setSize(newnode, 1)
-        AVLNode.setRight(newnode, AVLNode(None))
-        AVLNode.setParent(AVLNode.getRight(newnode), newnode)
-        AVLNode.setLeft(newnode, AVLNode(None))
-        AVLNode.setParent(AVLNode.getLeft(newnode), newnode)
-        if i < AVLNode.getSize(self.root):
-            current = AVLTreeList.Tree_select(self, i + 1)
-            if not AVLNode.isRealNode(AVLNode.getLeft(current)):
-                AVLNode.setLeft(current, newnode)
-                AVLNode.setParent(newnode, current)
+        newnode = AVLNode(val) #O(1)
+        AVLNode.setHeight(newnode, 0) #O(1)
+        AVLNode.setSize(newnode, 1) #O(1)
+        AVLNode.setRight(newnode, AVLNode(None)) #O(1)
+        AVLNode.setParent(AVLNode.getRight(newnode), newnode) #O(1)
+        AVLNode.setLeft(newnode, AVLNode(None)) #O(1)
+        AVLNode.setParent(AVLNode.getLeft(newnode), newnode) #O(1)
+        if i < AVLNode.getSize(self.root): #O(1)
+            current = AVLTreeList.Tree_select(self, i + 1) #O(log(n))
+            if not AVLNode.isRealNode(AVLNode.getLeft(current)): #O(1)
+                AVLNode.setLeft(current, newnode) #O(1)
+                AVLNode.setParent(newnode, current) #O(1)
             else:
-                predecessor = AVLTreeList.predecessor(current)
-                AVLNode.setRight(predecessor, newnode)
-                AVLNode.setParent(newnode, predecessor)
+                predecessor = AVLTreeList.predecessor(current) #O(log(n))
+                AVLNode.setRight(predecessor, newnode) #O(1)
+                AVLNode.setParent(newnode, predecessor) #O(1)
         else:
-            maxnode = AVLTreeList.MaxAvl(self.root)
-            if maxnode != None:
-                AVLNode.setRight(maxnode, newnode)
-                AVLNode.setParent(newnode, maxnode)
+            maxnode = AVLTreeList.MaxAvl(self.root) #O(log(n))
+            if maxnode != None: #O(1)
+                AVLNode.setRight(maxnode, newnode) #O(1)
+                AVLNode.setParent(newnode, maxnode) #O(1)
             else:
-                self.root = newnode
-        AVLTreeList.setSize(newnode)
-        dad = AVLNode.getParent(newnode)
-        return dad
+                self.root = newnode #O(1)
+        AVLTreeList.setSize(newnode) #O(log(n))
+        dad = AVLNode.getParent(newnode) #O(1)
+        return dad #O(1)
 
     """inserts val at position i in the list
 
@@ -487,80 +491,82 @@ class AVLTreeList(object):
                 if dad == self.root:
                     self.root = AVLNode.getParent(dad) #O(1)
                 dad = AVLNode.getParent(dad) #O(1)
-                count += AVLTreeList.setheight(dad) #O(1)
                 break
 
         return count #O(1)
 
-    """deletes the i'th item in the list
-
+    """deletes the i'th item (rank) in the Tree like in Regular Binary Search Tree
+    
     @type i: int
     @pre: 0 <= i < self.length()
     @param i: The intended index in the list to be deleted
     @rtype: int
     @returns: parent of the successor of the element in i index
     """
+    """TIME COMLEXITY: O(log(n))"""
     def BST_delete(self, i):
-        pop = AVLTreeList.Tree_select(self, i + 1)
-        if (not AVLNode.isRealNode(AVLNode.getLeft(pop))) and (not AVLNode.isRealNode(AVLNode.getRight(pop))):
-            if AVLNode.getParent(pop) == None:
-                self.root = None
-                return 0
-            elif AVLNode.getRight(AVLNode.getParent(pop)) == pop:
-                dad = AVLNode.getParent(pop)
-                AVLNode.setRight(AVLNode.getParent(pop), AVLNode(None))
-                AVLNode.setParent(AVLNode.getRight(AVLNode.getParent(pop)), AVLNode.getParent(pop))
+        pop = AVLTreeList.Tree_select(self, i + 1)  #O(log(n))
+        if (not AVLNode.isRealNode(AVLNode.getLeft(pop))) and (not AVLNode.isRealNode(AVLNode.getRight(pop))): #O(1)
+            if AVLNode.getParent(pop) == None:  #O(1)
+                self.root = None  #O(1)
+                return 0  #O(1)
+            elif AVLNode.getRight(AVLNode.getParent(pop)) == pop: #O(1)
+                dad = AVLNode.getParent(pop) #O(1)
+                AVLNode.setRight(AVLNode.getParent(pop), AVLNode(None)) #O(1)
+                AVLNode.setParent(AVLNode.getRight(AVLNode.getParent(pop)), AVLNode.getParent(pop)) #O(1)
             else:
-                dad = AVLNode.getParent(pop)
-                AVLNode.setLeft(AVLNode.getParent(pop), AVLNode(None))
-                AVLNode.setParent(AVLNode.getLeft(AVLNode.getParent(pop)), AVLNode.getParent(pop))
-        elif not AVLNode.isRealNode(AVLNode.getLeft(pop)):
-            dad = AVLNode.getParent(pop)
-            if dad == None:
-                self.root = AVLNode.getRight(pop)
-                AVLNode.getParent(self.root, None)
-            elif AVLNode.getRight(dad) == pop:
-                AVLNode.setRight(dad, AVLNode.getRight(pop))
-                AVLNode.setParent(AVLNode.getRight(dad), dad)
+                dad = AVLNode.getParent(pop) #O(1)
+                AVLNode.setLeft(AVLNode.getParent(pop), AVLNode(None)) #O(1)
+                AVLNode.setParent(AVLNode.getLeft(AVLNode.getParent(pop)), AVLNode.getParent(pop)) #O(1)
+        elif not AVLNode.isRealNode(AVLNode.getLeft(pop)): #O(1)
+            dad = AVLNode.getParent(pop) #O(1)
+            if dad == None:  #O(1)
+                self.root = AVLNode.getRight(pop) #O(1)
+                AVLNode.getParent(self.root, None) #O(1)
+            elif AVLNode.getRight(dad) == pop: #O(1)
+                AVLNode.setRight(dad, AVLNode.getRight(pop)) #O(1)
+                AVLNode.setParent(AVLNode.getRight(dad), dad) #O(1)
+            else: #O(1)
+                AVLNode.setLeft(dad, AVLNode.getRight(pop)) #O(1)
+                AVLNode.setParent(AVLNode.getLeft(dad), dad) #O(1)
+        elif not AVLNode.isRealNode(AVLNode.getRight(pop)): #O(1)
+            dad = AVLNode.getParent(pop) #O(1)
+            if dad == None: #O(1)
+                self.root = AVLNode.getLeft(pop) #O(1)
+                AVLNode.setParent(self.root, None)  #O(1)
+            elif AVLNode.getRight(dad) == pop: #O(1)
+                AVLNode.setRight(dad, AVLNode.getLeft(pop)) #O(1)
+                AVLNode.setParent(AVLNode.getRight(dad), dad) #O(1)
             else:
-                AVLNode.setLeft(dad, AVLNode.getRight(pop))
-                AVLNode.setParent(AVLNode.getLeft(dad), dad)
-        elif not AVLNode.isRealNode(AVLNode.getRight(pop)):
-            dad = AVLNode.getParent(pop)
-            if dad == None:
-                self.root = AVLNode.getLeft(pop)
-                AVLNode.setParent(self.root, None)
-            elif AVLNode.getRight(dad) == pop:
-                AVLNode.setRight(dad, AVLNode.getLeft(pop))
-                AVLNode.setParent(AVLNode.getRight(dad), dad)
-            else:
-                AVLNode.setLeft(dad, AVLNode.getLeft(pop))
-                AVLNode.setParent(AVLNode.getLeft(dad), dad)
+                AVLNode.setLeft(dad, AVLNode.getLeft(pop)) #O(1)
+                AVLNode.setParent(AVLNode.getLeft(dad), dad) #O(1)
         else:
-            SuccessorOfPop = AVLTreeList.successor(pop)
-            dad = AVLNode.getParent(SuccessorOfPop)
-            if dad != pop:
-                AVLNode.setLeft(dad, AVLNode.getRight(SuccessorOfPop))
-                AVLNode.setParent(AVLNode.getRight(SuccessorOfPop), dad)
-                AVLNode.setRight(SuccessorOfPop, AVLNode.getRight(pop))
-                AVLNode.setParent(AVLNode.getRight(SuccessorOfPop), SuccessorOfPop)
-            AVLNode.setLeft(SuccessorOfPop, AVLNode.getLeft(pop))
-            AVLNode.setParent(AVLNode.getLeft(pop), SuccessorOfPop)
+            SuccessorOfPop = AVLTreeList.successor(pop)  #O(log(n))
+            dad = AVLNode.getParent(SuccessorOfPop) #O(1)
+            if dad != pop: #O(1)
+                AVLNode.setLeft(dad, AVLNode.getRight(SuccessorOfPop)) #O(1)
+                AVLNode.setParent(AVLNode.getRight(SuccessorOfPop), dad) #O(1)
+                AVLNode.setRight(SuccessorOfPop, AVLNode.getRight(pop)) #O(1)
+                AVLNode.setParent(AVLNode.getRight(SuccessorOfPop), SuccessorOfPop) #O(1)
+            AVLNode.setLeft(SuccessorOfPop, AVLNode.getLeft(pop)) #O(1)
+            AVLNode.setParent(AVLNode.getLeft(pop), SuccessorOfPop) #O(1)
 
-            if pop == self.root:
-                self.root = SuccessorOfPop
-                AVLNode.setParent(SuccessorOfPop, None)
+            if pop == self.root: #O(1)
+                self.root = SuccessorOfPop #O(1)
+                AVLNode.setParent(SuccessorOfPop, None) #O(1)
             else:
-                anccestor = AVLNode.getParent(pop)
-                if AVLNode.getRight(anccestor) == pop:
-                    AVLNode.setRight(anccestor, SuccessorOfPop)
+                anccestor = AVLNode.getParent(pop) #O(1)
+                if AVLNode.getRight(anccestor) == pop: #O(1)
+                    AVLNode.setRight(anccestor, SuccessorOfPop) #O(1)
                 else:
-                    AVLNode.setLeft(anccestor, SuccessorOfPop)
-                AVLNode.setParent(SuccessorOfPop, anccestor)
-            if dad == pop:
-                dad = SuccessorOfPop
-        AVLTreeList.setSize(dad)
-        return dad
+                    AVLNode.setLeft(anccestor, SuccessorOfPop) #O(1)
+                AVLNode.setParent(SuccessorOfPop, anccestor) #O(1)
+            if dad == pop: #O(1)
+                dad = SuccessorOfPop #O(1)
+            AVLNode.setHeight(SuccessorOfPop,max(AVLNode.getHeight(AVLNode.getLeft(SuccessorOfPop)),
+                                                 AVLNode.getHeight(AVLNode.getRight(SuccessorOfPop))) +1 ) #O(1)
+        AVLTreeList.setSize(dad) #O(1)
+        return dad #O(1)
 
     """deletes the i'th item in the list
 
@@ -604,7 +610,6 @@ class AVLTreeList(object):
                 if dad == self.root: #O(1)
                     self.root = AVLNode.getParent(dad) #O(1)
                 dad = AVLNode.getParent(AVLNode.getParent(dad)) #O(1)
-        count += AVLTreeList.setheight(dad) #O(1)
         return count #O(1)
 
     """returns the value of the first item in the list
@@ -612,24 +617,24 @@ class AVLTreeList(object):
     @rtype: str
     @returns: the value of the first item, None if the list is empty
     """
-
+    """TIME COMLEXITY: O(log(n))"""
     def first(self):
-        Min = AVLTreeList.MinAvl(self.root)
-        if Min == None:
-            return None
-        return AVLNode.getValue(Min)
+        Min = AVLTreeList.MinAvl(self.root) #O(log(n))
+        if Min == None: #O(1)
+            return None #O(1)
+        return AVLNode.getValue(Min) #O(1)
 
     """returns the value of the last item in the list
 
     @rtype: str
     @returns: the value of the last item, None if the list is empty
     """
-
+    """TIME COMLEXITY: O(log(n))"""
     def last(self):
-        Max = AVLTreeList.MaxAvl(self.root)
-        if Max == None:
-            return None
-        return AVLNode.getValue(Max)
+        Max = AVLTreeList.MaxAvl(self.root) #O(log(n))
+        if Max == None: #O(1)
+            return None #O(1)
+        return AVLNode.getValue(Max) #O(1)
 
     """returns an array representing list 
 
@@ -643,7 +648,7 @@ class AVLTreeList(object):
         if node == None: #O(1)
             return listAvl #O(1)
         while node != None: #RUN OVER ALL THE LIST (n ITERRATIONS)
-            listAvl += [AVLNode.getValue(node)] #O(1)
+            listAvl.append(AVLNode.getValue(node)) #O(1)
             node = AVLTreeList.successor(node) #AMORTAIZED TIME: O(1)
         return listAvl #O(1)
 
@@ -652,9 +657,9 @@ class AVLTreeList(object):
     @rtype: int
     @returns: the size of the list
     """
-
+    """"TIME COMPLEXITY: O(1)"""
     def length(self):
-        return AVLNode.getSize(self.root)
+        return AVLNode.getSize(self.root) # O(1)
 
     """splits the list at the i'th index
 
@@ -665,50 +670,50 @@ class AVLTreeList(object):
     @returns: a list [left, val, right], where left is an AVLTreeList representing the list until index i-1,
     right is an AVLTreeList representing the list from index i+1, and val is the value at the i'th index.
     """
-
+    """"TIME COMPLEXITY: O(log(n))"""
     def split(self, i):
-        x = AVLTreeList.Tree_select(self, i + 1)
-        val = AVLNode.getValue(x)
-        lefttree = AVLTreeList()
-        AVLNode.setParent(AVLNode.getLeft(x), None)
-        lefttree.root = AVLNode.getLeft(x)
-        righttree = AVLTreeList()
-        AVLNode.setParent(AVLNode.getRight(x), None)
-        righttree.root = AVLNode.getRight(x)
-        dad = AVLNode.getParent(x)
-        tree = AVLTreeList()
+        x = AVLTreeList.Tree_select(self, i + 1) #O(log(n))
+        val = AVLNode.getValue(x) #O(1)
+        lefttree = AVLTreeList() #O(1)
+        AVLNode.setParent(AVLNode.getLeft(x), None) #O(1)
+        lefttree.root = AVLNode.getLeft(x) #O(1)
+        righttree = AVLTreeList() #O(1)
+        AVLNode.setParent(AVLNode.getRight(x), None) #O(1)
+        righttree.root = AVLNode.getRight(x) #O(1)
+        dad = AVLNode.getParent(x) #O(1)
+        tree = AVLTreeList() #O(1)
         while dad != None:
-            if AVLNode.getRight(dad) == x:
-                AVLNode.setRight(dad, AVLNode(None))
-                AVLNode.setParent(AVLNode.getRight(dad), dad)
-                x = dad
-                dad = AVLNode.getParent(x)
-                AVLNode.setParent(x, None)
-                tree.root = x
-                AVLNode.setSize(x, AVLNode.getSize(AVLNode.getLeft(x)) + 1)
-                AVLNode.setHeight(x, AVLNode.getHeight(AVLNode.getLeft(x)) + 1)
+            if AVLNode.getRight(dad) == x: #O(1)
+                AVLNode.setRight(dad, AVLNode(None)) #O(1)
+                AVLNode.setParent(AVLNode.getRight(dad), dad) #O(1)
+                x = dad #O(1)
+                dad = AVLNode.getParent(x) #O(1)
+                AVLNode.setParent(x, None) #O(1)
+                tree.root = x #O(1)
+                AVLNode.setSize(x, AVLNode.getSize(AVLNode.getLeft(x)) + 1) #O(1)
+                AVLNode.setHeight(x, AVLNode.getHeight(AVLNode.getLeft(x)) + 1) #O(1)
                 tree.concat(lefttree)
             else:
-                AVLNode.setLeft(dad, AVLNode(None))
-                AVLNode.setParent(AVLNode.getLeft(dad), dad)
-                x = dad
-                dad = AVLNode.getParent(x)
-                AVLNode.setParent(x, None)
-                tree.root = AVLNode.getRight(x)
-                AVLNode.setParent(tree.root, None)
-                AVLNode.setRight(x, AVLNode(None))
-                AVLNode.setParent(AVLNode.getRight(x), x)
-                AVLNode.setLeft(x, righttree.root)
-                AVLNode.setParent(righttree.root, x)
-                righttree.root = x
-                AVLNode.setSize(x, AVLNode.getSize(AVLNode.getLeft(x)) + 1)
-                AVLNode.setHeight(x, AVLNode.getHeight(AVLNode.getLeft(x)) + 1)
+                AVLNode.setLeft(dad, AVLNode(None)) #O(1)
+                AVLNode.setParent(AVLNode.getLeft(dad), dad) #O(1)
+                x = dad #O(1)
+                dad = AVLNode.getParent(x) #O(1)
+                AVLNode.setParent(x, None) #O(1)
+                tree.root = AVLNode.getRight(x) #O(1)
+                AVLNode.setParent(tree.root, None) #O(1)
+                AVLNode.setRight(x, AVLNode(None)) #O(1)
+                AVLNode.setParent(AVLNode.getRight(x), x) #O(1)
+                AVLNode.setLeft(x, righttree.root) #O(1)
+                AVLNode.setParent(righttree.root, x) #O(1)
+                righttree.root = x #O(1)
+                AVLNode.setSize(x, AVLNode.getSize(AVLNode.getLeft(x)) + 1) #O(1)
+                AVLNode.setHeight(x, AVLNode.getHeight(AVLNode.getLeft(x)) + 1) #O(1)
                 righttree.concat(tree)
-        if not AVLNode.isRealNode(righttree.root):
-            righttree.root = None
-        if not AVLNode.isRealNode(lefttree.root):
-            lefttree.root = None
-        return [lefttree, val, righttree]
+        if not AVLNode.isRealNode(righttree.root):#O(1)
+            righttree.root = None #O(1)
+        if not AVLNode.isRealNode(lefttree.root):  #O(1)
+            lefttree.root = None #O(1)
+        return [lefttree, val, righttree] #O(1)
 
     """concatenates lst to self
 
@@ -717,7 +722,7 @@ class AVLTreeList(object):
     @rtype: int
     @returns: the absolute value of the difference between the height of the AVL trees joined
     """
-
+    """"TIME COMPLEXITY: O(log(n))"""
     def concat(self, lst):
         if self.root == None:
             self.root = lst.root
@@ -787,7 +792,6 @@ class AVLTreeList(object):
                     self.root = AVLNode.getParent(dad)
                     lst.root = self.root
                 dad = AVLNode.getParent(AVLNode.getParent(dad))
-        AVLTreeList.setheight(dad)
         if absouluteHeight < 0:
             absouluteHeight = -1 * absouluteHeight
         return absouluteHeight
@@ -799,10 +803,10 @@ class AVLTreeList(object):
     @rtype: int
     @returns: the first index that contains val, -1 if not found.
     """
-
+    """"TIME COMPLEXITY: O(n)"""
     def search(self, val):
         count = 0   #O(1)
-        node = AVLTreeList.MinAvl(self.root)  #O(1)
+        node = AVLTreeList.MinAvl(self.root)  #O(log(n))
         while node != None:  #n iteration in the worst case
             if AVLNode.getValue(node) == val:   #O(1)
                 return count  #O(1)
@@ -815,7 +819,7 @@ class AVLTreeList(object):
     @rtype: AVLNode
     @returns: the root, None if the list is empty
     """
-
+    """"TIME COMPLEXITY: O(1)"""
     def getRoot(self):
         return self.root
 
@@ -1000,8 +1004,11 @@ print(b.delete(11))
 b.check()
 print(b.delete(9))
 b.check()
+AVLTreeList.print2d(b.getRoot())
 print(b.delete(4))
+AVLTreeList.print2d(b.getRoot())
 b.check()
+
 print(b.delete(0))
 b.check()
 print(b.delete(3))
@@ -1029,7 +1036,7 @@ a.insert(2, 300)
 #AVLTreeList.print2d(b.getRoot())
 #print(b.listToArray())
 
-"""
+
 ###############  test 2 concat  ##########33
 t = AVLTreeList()
 t.insert(0, 40)
@@ -1082,7 +1089,8 @@ print("concet" , a.concat(t))
 a.check()
 AVLTreeList.print2d(a.getRoot())
 print(a.listToArray())
-"""
+
+
 
 ##########test 5 ###################
 print("test 5555555555")
@@ -1101,6 +1109,12 @@ t.check()
 print(t.listToArray())
 AVLTreeList.print2d(t.getRoot())
 print("concet" , t.concat(a))
+t.delete(5)
+t.delete(7)
+t.delete(4)
+t.delete(5)
+t.delete(5)
+print("cheeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeek")
 t.check()
 AVLTreeList.print2d(t.getRoot())
-print(t.listToArray())
+print(t.listToArray()) 
